@@ -72,6 +72,7 @@ default validators
 ---
  * email: can use the string `"email"` as the rule to run an email validation on a field: `{ emailInput: "email" }`
  * confirm: can use the string `"confirm#againstId"` to make sure the field has the same value as the `#againstId`: `{ "password-conf": "confirm#password" }`
+ * required: can use the string `"required"` to run this default rule with the default message: `{ username: "required" }`
 
 Example usage
 ===
