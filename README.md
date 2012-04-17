@@ -14,13 +14,11 @@ Usage
 Options
 ===
     {
-      validations: validations,
-      rules: { name: rule, ...},
-      messages: {
-        ruleName: "error message"
-      },
-      success: success function, // default function when missing on rule
-      failure: failure function, // default function when missing on rule
+      validations: validations, // required. without this no validations would run
+      rules: { name: rule || "ruleName", ...}, // optional 
+      messages: { ruleName: "error message", ...}, // optional 
+      success: success function, // optional default function when missing on rule. If none is defined state is written to the console
+      failure: failure function, // optional default function when missing on rule. If none is defined state is written to the console
     }
 
 success function
