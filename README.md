@@ -8,8 +8,8 @@ Here it is, enjoy.
 
 Usage
 ===
-var validator = $("#form").validator({ options })
-validator.bind();
+    var validator = $("#form").validator({ options })
+    validator.bind();
 
 Options
 ===
@@ -25,15 +25,15 @@ Options
 
 success function
 ---
-function (e, isLast) // e = form element; isLast = is the last rule for this element
+    function (e, isLast) // e = form element; isLast = is the last rule for this element
 
 failure function
 ---
-function (e, msg) // e = form element; msg = error message
+    function (e, msg) // e = form element; msg = error message
 
 validator function
 ---
-function (e, arg) // e = form element; arg = optional function argument
+    function (e, arg) // e = form element; arg = optional function argument
 
 rule
 ---
