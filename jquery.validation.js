@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * Version: 0.0.1 
+ * Version: 0.0.2 
  * */
 
 define(["jquery"], function ($) {
@@ -65,7 +65,7 @@ define(["jquery"], function ($) {
 					email: "invalid email address",
 					confirm: "doesn't match the other field"
 				},
-				success: function (element, isLast) {
+				success: function (element) {
 					if (console && console.log) {
 						console.log("I was successful");
 					}
@@ -159,8 +159,8 @@ define(["jquery"], function ($) {
 
 				if (result) {
 					s = (r.success || this.settings.success);
-					if (s && typeof (s) === "function") {
-						s(e, isLast);
+					if (s && typeof (s) === "function" && isLast) {
+					    s(e);
 					}
 				} else {
 					failure = r.failure || this.settings.failure;

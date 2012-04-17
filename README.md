@@ -25,7 +25,7 @@ Options
 
 success function
 ---
-    function (e, isLast) // e = form element; isLast = is the last rule for this element
+    function (e) // e = form element;
 
 failure function
 ---
@@ -77,8 +77,7 @@ default validators
 Example usage
 ===
     var validator = $("#frm-register").validate({
-      success: function (e, isLast) {
-        if (!isLast) { return; }
+      success: function (e) {
         revealInvisible.hide(self.findFieldError(e));
         self.setActivity(e, "good");
       },
