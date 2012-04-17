@@ -55,22 +55,23 @@ regular expression validators
 ---
 You can specify a regular rule by setting the validator of the rule to a regular expression.
 
-
 You can also specify a regular expression as a bare string rule using the following format:
+
     "regex#pattern"
 
 An example is:
+
     "regex#^[a-zA-Z0-9\\-\\._]{3,}$"
 
 If you want to specify a custom message for the regex rule when using the bare stirng syntax, set a
 message name as a string representation of the regex literal: 
+
     messages: { "/^[a-zA-Z0-9\\-\\._]{3,}$/" : "oops i did it again!" },
 
 default validators
 ---
  * email: can use the string `"email"` as the rule to run an email validation on a field: `{ emailInput: "email" }`
  * confirm: can use the string `"confirm#againstId"` to make sure the field has the same value as the `#againstId`: `{ "password-conf": "confirm#password" }`
-
 
 Example usage
 ===
