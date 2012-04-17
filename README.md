@@ -6,6 +6,8 @@ simple form validation component which doesn't muck with the page html in any wa
 
 Here it is, enjoy.
 
+General inspiration for this plugin was derrived from: http://bassistance.de/jquery-plugins/jquery-plugin-validation/
+
 Usage
 ===
     var validator = $("#form").validator({ options })
