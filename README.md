@@ -39,7 +39,7 @@ rule
 ---
     {
       name: "name", //optional 
-      validator: validator function // required
+      validator: validator function || RexExp // required
       message: "error message" // optional
       success: success function // optional
       failure: failure function // optional
@@ -51,10 +51,83 @@ validations
       formElementId: [rule || "ruleName", ..] || rule || "ruleName", ...
     }
 
+regular expression validators
+---
+You can specify a regular rule by setting the validator of the rule to a regular expression.
+
+
+You can also specify a regular expression as a bare string rule using the following format:
+    "regex#pattern"
+
+An example is:
+    "regex#^[a-zA-Z0-9\\-\\._]{3,}$"
+
+If you want to specify a custom message for the regex rule when using the bare stirng syntax, set a
+message name as a string representation of the regex literal: 
+    messages: { "/^[a-zA-Z0-9\\-\\._]{3,}$/" : "oops i did it again!" },
+
+default validators
+---
+ * email: can use the string `"email"` as the rule to run an email validation on a field: `{ emailInput: "email" }`
+ * confirm: can use the string `"confirm#againstId"` to make sure the field has the same value as the `#againstId`: `{ "password-conf": "confirm#password" }`
+
 
 Example usage
 ===
-[http://project-rails-edge.herokuapp.com/register] (http://project-rails-edge.herokuapp.com/register)
+    var validator = $("#frm-register").validate({
+      success: function (e, isLast) {
+        if (!isLast) { return; }
+        revealInvisible.hide(self.findFieldError(e));
+        self.setActivity(e, "good");
+      },
+      failure: function (e, m) {
+        revealInvisible.show(self.findFieldError(e)).html(m);
+        self.setActivity(e, "bad");
+      },
+      // shows how to set a message w/ using a RegExp as the name of the rule:
+      //messages: { "/^[a-zA-Z0-9\\-\\._]{3,}$/" : "oops i did it again!" },
+      validations: {
+        name: [
+          {
+            message: "must a mix of at least 3 letters, numbers, dots (.), dashes [-], or underscores [_]",
+            validator: /^[a-zA-Z0-9\-\._]{3,}$/
+          },
+          // shows how to use a regexp rule as just a name:
+          //"regex#^[a-zA-Z0-9\\-\\._]{3,}$",
+          {
+            message: "name is in use",
+            validator: this.checkName // matches the validator function signature
+          }
+        ],
+        email: [
+          "email",
+          {
+            message: "email is in use",
+            validator: this.checkEmail // matches the validator function signature
+          }
+        ],
+        // here we use the default required rule, but override the message value, when 
+        // overrideing an default validator, you do not need to specify the validator function
+        pword: {
+          name: "required",
+          message: "password is required"
+        },
+        "conf-pword": [
+          // the next line shows how you can use the default require validator w/ it's default message:
+          //"required", 
+          {
+            name: "required",
+            message: "confirm is required"
+          },
+          {
+            name: "confirm#pword",
+            message: "passwords do not match"
+          }
+        ]
+      }
+    });
+
+taken from: [http://project-rails-edge.herokuapp.com/register] (http://project-rails-edge.herokuapp.com/register)
 
 The MIT License
 === 
