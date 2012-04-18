@@ -1,0 +1,17 @@
+{
+    "name": "jquery.validation",
+    "version": "0.0.3",
+    "title": "jquery.validation that doesn't suck",
+    "author": {
+        "name": "geoff horsey",
+        "url": "http://taintedsanctity.tumblr.com"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://www.opensource.org/licenses/MIT"
+        }
+    ],
+    "dependencies": { "jquery": "1.7.2" },
+    "description": "This jquery validation library doesn't impose any structure in your HTML document.  It merely alerts the developer to the status of the form on a per field basis via success/failure callbacks"
+}
