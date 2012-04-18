@@ -1,4 +1,4 @@
-jquery.validation
+jquery.validation: that doesn't suck
 ===
 Most form validation plugins try to modify the page in some way to display error
 messages, which usually ends up being a pain in the ass.  I decided to create a 
