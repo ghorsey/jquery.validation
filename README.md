@@ -87,11 +87,11 @@ You can specify a regular rule by setting the validator of the rule to a regular
 
 You can also specify a regular expression as a bare string rule using the following format:
 
-    "regex#pattern"
+    "pattern#thePattern"
 
 An example is:
 
-    "regex#^[a-zA-Z0-9\\-\\._]{3,}$"
+    "pattern#^[a-zA-Z0-9\\-\\._]{3,}$"
 
 If you want to specify a custom message for the regex rule when using the bare stirng syntax, set a
 message name as a string representation of the regex literal: 
@@ -124,7 +124,7 @@ Example usage
             validator: /^[a-zA-Z0-9\-\._]{3,}$/
           },
           // shows how to use a regexp rule as just a name:
-          //"regex#^[a-zA-Z0-9\\-\\._]{3,}$",
+          //"pattern#^[a-zA-Z0-9\\-\\._]{3,}$",
           {
             message: "name is in use",
             validator: this.checkName // matches the validator function signature

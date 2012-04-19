@@ -22,11 +22,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * Version: 0.1.4
+ * Version: 0.2.0
  * */
 
 (function ($) {
     "use strict";
+
+    function splitName(name) {
+        var i, result;
+        if (name.indexOf("#") < 0) {
+            result = [ name ];
+        } else {
+            i = name.indexOf("#");
+            result = [
+                name.substring(0, i),
+                name.substring(i + 1)
+            ];
+        }
+        return result;
+    }
+
     $.fn.validate = function (options) {
         var self = this, validator = {
             f: self,
@@ -53,8 +68,8 @@
                             return $(e).val() === $(other).val();
                         }
                     },
-                    regex: {
-                        name: "regex",
+                    pattern: {
+                        name: "pattern",
                         validator: function (e, regex) {
                             return regex.test($(e).val());
                         }
@@ -119,67 +134,84 @@
 
             runRule: function (e, rule, isLast) {
 
-                var r = {}, comparer, v, result, s, failure, msgName;
+                var parsed, result;
 
-                if (typeof (rule) === "string") {
-                    if (rule.indexOf("#") < 0) {
-                        rule = this.settings.rules[rule];
-                        msgName = rule.name;
-                    } else {
-                        v = rule.split("#");
-                        rule = this.settings.rules[v[0]];
-                        msgName = rule.name;
-                        if (v[0] !== "regex") {
-                            comparer = "#" + v[1];
-                        } else {
-                            comparer = new RegExp(v[1]);
-                            msgName = comparer.toString();
-                        }
-                    }
-                }
+                parsed = this.parseRule(rule);
 
-                if (rule.name && rule.name.indexOf("#") < 0) {
-                    $.extend(r, rule, this.settings.rules[rule.name]);
-                    msgName = msgName || r.name;
-                } else if (rule.name) {
-                    v = rule.name.split("#");
-                    $.extend(r, rule, this.settings.rules[v[0]]);
-                    if (v[0] !== "regex") {
-                        comparer = "#" + v[1];
-                        msgName = msgName || v[0];
-                    } else {
-                        comparer = new RegExp(v[1]);
-                        msgName = msgName || v[1];
-                    }
-                } else {
-                    $.extend(r, rule);
-                }
-
-                if (typeof (r.validator) === "function") {
-                    result = r.validator(e, comparer);
-                } else if (typeof (r.validator) === "object" && r.validator.test) {
-                    result = this.settings.rules.regex.validator(e, r.validator);
+                if (typeof (parsed.rule.validator) === "function") {
+                    result = parsed.rule.validator(e, parsed.arg);
+                } else if (typeof (parsed.rule.validator) === "object" && parsed.rule.validator.test) {
+                    result = this.settings.rules.pattern.validator(e, parsed.rule.validator);
                 } else {
                     throw "cannot determine validator";
                 }
 
-                if (result) {
-                    s = (r.success || this.settings.success);
-                    if (s && typeof (s) === "function" && isLast) {
-                        s(e);
-                    }
+                if (result && isLast) {
+                    this.pass(e, parsed);
                 } else {
-                    failure = r.failure || this.settings.failure;
-                    if (failure && typeof (failure) === "function") {
-                        failure(e, r.message || this.settings.messages[msgName] || "Invalid");
-                    }
+                    this.fail(e, parsed);
                 }
 
                 return result;
             },
 
-            bind: function () {
+            extractRule: function (fieldName, ruleName) {
+                var rule, itm, validation;
 
+                validation = this.settings.validations[fieldName];
+                if (!validation) { return; }
+
+                if (validation.length) {
+                    for (itm in validation) {
+                        if (validation.hasOwnProperty(itm) && validation[itm].name && validation[itm].name === ruleName) {
+                            rule = this.settings.validations[itm];
+                            break;
+                        }
+                    }
+                } else if (this.settings.validations[fieldName].name && this.settings.validations[fieldName].name === ruleName) {
+                    rule = this.settings.validations[fieldName];
+                }
+
+                return rule;
+            },
+
+            passValidation: function (fieldName, ruleName) {
+                var rule = this.extractRule(fieldName, ruleName);
+                if (!rule) { return; }
+
+                this.pass($("#" + fieldName), rule);
+            },
+
+            failValidation: function (fieldName, ruleName) {
+                var rule = this.extractRule(fieldName, ruleName);
+                if (!rule) { return; }
+
+                this.fail($("#" + fieldName), rule);
+            },
+
+            pass: function (e, rule) {
+                var s = (rule.rule.success || rule.success || this.settings.success);
+                if (s && typeof (s) === "function") {
+                    s(e);
+                }
+            },
+
+            fail: function (e, rule) {
+                var failure, parsed;
+
+                if (rule.rule) {
+                    parsed = rule;
+                } else {
+                    parsed = this.parseRule(rule);
+                }
+
+                failure = parsed.rule.failure || this.settings.failure;
+                if (failure && typeof (failure) === "function") {
+                    failure(e, parsed.rule.message || this.settings.messages[parsed.messageKey] || "Invalid");
+                }
+            },
+
+            bind: function () {
                 $(this.f).bind("submit", {that: this}, function (e) { return e.data.that.validate(); });
                 var $e, itm, binder = function (e) {
                     e.data.that.runRules(e.currentTarget, e.data.that.settings.validations[e.data.key]);
@@ -191,6 +223,49 @@
                         $e.bind("change", {that: this, key: itm}, binder);
                     }
                 }
+            },
+
+            parseRule: function (rule) {
+                var ruleName, msgName, comparer, r = {};
+                if (typeof (rule) === "string") {
+                    ruleName = splitName(rule);
+                    if (ruleName.length === 1) {
+                        rule = this.settings.rules[rule];
+                        msgName = rule.name;
+                    } else {
+                        rule = this.settings.rules[ruleName[0]];
+                        msgName = rule.name;
+                        if (ruleName[0] !== "pattern") {
+                            comparer = "#" + ruleName[1];
+                        } else {
+                            comparer = new RegExp(ruleName[1]);
+                            msgName = comparer.toString();
+                        }
+                    }
+                }
+
+                if (rule.name && rule.name.indexOf("#") < 0) {
+                    $.extend(r, rule, this.settings.rules[rule.name]);
+                    msgName = msgName || r.name;
+                } else if (rule.name) {
+                    ruleName = splitName(rule.name);
+                    $.extend(r, rule, this.settings.rules[ruleName[0]]);
+                    if (ruleName[0] !== "pattern") {
+                        comparer = "#" + ruleName[1];
+                        msgName = msgName || ruleName[0];
+                    } else {
+                        comparer = new RegExp(ruleName[1]);
+                        msgName = msgName || ruleName[1];
+                    }
+                } else {
+                    $.extend(r, rule);
+                }
+
+                return {
+                    rule: r,
+                    messageKey: msgName,
+                    arg: comparer
+                };
             }
         };
 
