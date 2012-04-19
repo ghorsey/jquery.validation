@@ -13,6 +13,36 @@ Usage
     var validator = $("#form").validator({ options })
     validator.bind();
 
+Validator object
+===
+The validator objects contains the validations rules bound to a particular form.
+
+bind() method
+---
+The bind method will bind each field's onchange event to trigger the validations for that field.  It also binds to the form's 
+onsubmit event to ensure all tests are passing before submission.
+
+validate() method
+---
+This method will run all of the validations for the form bound to the validator. (This is the method which is triggered on 
+the form's onsubmit event.
+
+passValidation(fieldName, ruleName)
+---
+This method will trigger the success function for the validation field name and child rule name.
+
+failValidation(fieldName, ruleName)
+---
+This method will trigger the failure function for the validation field name and childe rule name.
+
+pass(e, rule)
+---
+This method will trigger the success function for the specified element and rule object.
+
+fail(e, rule)
+---
+This method will trigger the failure function for the specified element and rule object.
+
 Options
 ===
     {
