@@ -1,3 +1,4 @@
+/*global console, jQuery*/
 /**  
  * The MIT License
  * 
@@ -21,15 +22,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * Version: 0.1.3
+ * Version: 0.1.4
  * */
 
-(function createPlugin ($) {
+(function ($) {
     "use strict";
     $.fn.validate = function (options) {
         var self = this, validator = {
             f: self,
-            
+
             settings: $.extend(true, {
                 validations: {},
                 rules: {
@@ -42,7 +43,7 @@
                     email: {
                         name: "email",
                         validator: function (e) {
-                            var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                            var re = /^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                             return re.test($(e).val());
                         }
                     },
@@ -78,12 +79,17 @@
             }, options),
 
             validate: function () {
-                var result = true, idx = 0, e;
-                for (idx = 0; idx < this.f[0].elements.length; idx += 1) {
-                    if (this.f[0].elements[idx]) {
-                        e = this.f[0].elements[idx];
+                var result = true,
+                    e,
+                    itm,
+                    rule;
 
-                        if (!this.runRules(e, this.settings.validations[e.name])) {
+                for (itm in this.settings.validations) {
+                    if (this.settings.validations.hasOwnProperty(itm)) {
+                        e = $("#" + itm);
+                        rule = this.settings.validations[itm];
+
+                        if (!this.runRules(e, rule)) {
                             result = false;
                         }
                     }
@@ -180,8 +186,8 @@
                 };
 
                 for (itm in this.settings.validations) {
-                    if ($(this.f[0].elements[itm])) {
-                        $e = $(this.f[0].elements[itm]);
+                    if (this.settings.validations.hasOwnProperty(itm)) {
+                        $e = $("#" + itm);
                         $e.bind("change", {that: this, key: itm}, binder);
                     }
                 }
@@ -190,4 +196,4 @@
 
         return validator;
     };
-})(jQuery);
+}(jQuery));
