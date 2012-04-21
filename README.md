@@ -19,8 +19,12 @@ The validator objects contains the validations rules bound to a particular form.
 
 bind() method
 ---
-The bind method will bind each field's onchange event to trigger the validations for that field.  It also binds to the form's 
-onsubmit event to ensure all tests are passing before submission.
+The bind method will bind the form's onsubmit event to ensure all tests are passing before form submission. It also calls
+the bindFields() method to bind the vaildations to each field's onchange method.
+
+bindFields() method
+---
+The bindFields binds each field's onchange event to trigger the validations for that field.
 
 validate() method
 ---

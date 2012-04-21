@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * Version: 0.2.0
+ * Version: 0.2.2
  * */
 
 (function ($) {
@@ -116,7 +116,6 @@
                 if (!rules) {
                     return true;
                 }
-
                 var result = true, idx;
                 if (typeof (rules) === "object" && rules.length) { // array of rules
                     for (idx in rules) {
@@ -148,7 +147,7 @@
 
                 if (result && isLast) {
                     this.pass(e, parsed);
-                } else {
+                } else if(!result) {
                     this.fail(e, parsed);
                 }
 
@@ -156,15 +155,15 @@
             },
 
             extractRule: function (fieldName, ruleName) {
-                var rule, itm, validation;
+                var rule, i, validation;
 
                 validation = this.settings.validations[fieldName];
                 if (!validation) { return; }
 
                 if (validation.length) {
-                    for (itm in validation) {
-                        if (validation.hasOwnProperty(itm) && validation[itm].name && validation[itm].name === ruleName) {
-                            rule = this.settings.validations[itm];
+                    for (i = 0; i < validation.length; i += 1) {
+                        if (validation[i].name && validation[i].name === ruleName) {
+                            rule = validation[i];
                             break;
                         }
                     }
@@ -211,18 +210,24 @@
                 }
             },
 
-            bind: function () {
-                $(this.f).bind("submit", {that: this}, function (e) { return e.data.that.validate(); });
-                var $e, itm, binder = function (e) {
+            bindFields: function() {
+                function bindElement (e) {
                     e.data.that.runRules(e.currentTarget, e.data.that.settings.validations[e.data.key]);
-                };
-
+                }
+                
+                var itm;
+                
                 for (itm in this.settings.validations) {
                     if (this.settings.validations.hasOwnProperty(itm)) {
-                        $e = $("#" + itm);
-                        $e.bind("change", {that: this, key: itm}, binder);
+                        $("#" + itm).bind("change", {that: this, key: itm}, bindElement);
                     }
                 }
+            },
+
+            bind: function () {
+                $(this.f).bind("submit", {that: this}, function (e) { return e.data.that.validate(); });
+                
+                this.bindFields();
             },
 
             parseRule: function (rule) {
@@ -246,6 +251,10 @@
 
                 if (rule.name && rule.name.indexOf("#") < 0) {
                     $.extend(r, rule, this.settings.rules[rule.name]);
+                    if (rule.validator) {
+                        r.validator = rule.validator;
+                    }
+                    
                     msgName = msgName || r.name;
                 } else if (rule.name) {
                     ruleName = splitName(rule.name);
