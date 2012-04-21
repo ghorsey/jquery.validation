@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * Version: 0.2.2
+ * Version: 0.2.3
  * */
 
 (function ($) {
@@ -147,7 +147,7 @@
 
                 if (result && isLast) {
                     this.pass(e, parsed);
-                } else if(!result) {
+                } else if (!result) {
                     this.fail(e, parsed);
                 }
 
@@ -210,13 +210,13 @@
                 }
             },
 
-            bindFields: function() {
-                function bindElement (e) {
+            bindFields: function () {
+                function bindElement(e) {
                     e.data.that.runRules(e.currentTarget, e.data.that.settings.validations[e.data.key]);
                 }
-                
+
                 var itm;
-                
+
                 for (itm in this.settings.validations) {
                     if (this.settings.validations.hasOwnProperty(itm)) {
                         $("#" + itm).bind("change", {that: this, key: itm}, bindElement);
@@ -226,7 +226,7 @@
 
             bind: function () {
                 $(this.f).bind("submit", {that: this}, function (e) { return e.data.that.validate(); });
-                
+
                 this.bindFields();
             },
 
@@ -254,7 +254,7 @@
                     if (rule.validator) {
                         r.validator = rule.validator;
                     }
-                    
+
                     msgName = msgName || r.name;
                 } else if (rule.name) {
                     ruleName = splitName(rule.name);
