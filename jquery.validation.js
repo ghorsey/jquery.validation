@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * Version: 0.2.4
+ * Version: 0.2.5
  * */
 
 (function (factory) {
@@ -68,7 +68,7 @@
                         name: "email",
                         validator: function (e) {
                             var re = /^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                            return re.test($(e).val());
+                            return ($(e).val() === "") ? true: re.test($(e).val());
                         }
                     },
                     confirm: {
