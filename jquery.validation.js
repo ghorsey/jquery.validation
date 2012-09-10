@@ -1,4 +1,4 @@
-/*global console, jQuery*/
+/*global define, console, jQuery*/
 /**  
  * The MIT License
  * 
@@ -22,16 +22,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * Version: 0.2.3
+ * Version: 0.2.4
  * */
 
-(function ($) {
+(function (factory) {
+    "use strict";
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     "use strict";
 
     function splitName(name) {
         var i, result;
         if (name.indexOf("#") < 0) {
-            result = [ name ];
+            result = [name];
         } else {
             i = name.indexOf("#");
             result = [
@@ -219,13 +228,13 @@
 
                 for (itm in this.settings.validations) {
                     if (this.settings.validations.hasOwnProperty(itm)) {
-                        $("#" + itm).bind("change", {that: this, key: itm}, bindElement);
+                        $("#" + itm).bind("change", { that: this, key: itm }, bindElement);
                     }
                 }
             },
 
             bind: function () {
-                $(this.f).bind("submit", {that: this}, function (e) { return e.data.that.validate(); });
+                $(this.f).bind("submit", { that: this }, function (e) { return e.data.that.validate(); });
 
                 this.bindFields();
             },
@@ -280,4 +289,4 @@
 
         return validator;
     };
-}(jQuery));
+}));
